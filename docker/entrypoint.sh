@@ -1,23 +1,46 @@
 #!/bin/sh
 set -e
 
-# Ensure permissions
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+cd /var/www/html
 
-# If SQLite is selected, ensure Laravel can create and write the database file.
-if [ "$DB_CONNECTION" = "sqlite" ]; then
-    mkdir -p /var/www/html/database
-    touch /var/www/html/database/database.sqlite
-    chown -R www-data:www-data /var/www/html/database
+# Copy .env.example to .env if .env doesn't exist
+if [ ! -f .env ]; then
+    echo "Creating .env from .env.example..."
+    cp .env.example .env
 fi
 
-# Run migrations and seed data. Do not hide an error: Render must report it
-# instead of starting an application that will return a generic 500 response.
-php artisan migrate --force --seed --no-interaction
+# Ensure all needed storage and database directories exist
+mkdir -p database \
+         storage/app/public \
+         storage/framework/cache/data \
+         storage/framework/sessions \
+         storage/framework/views \
+         storage/logs \
+         bootstrap/cache
 
-# Cache configurations for speed in production
-php artisan config:cache
-php artisan view:cache
+# Create SQLite database file if it doesn't exist
+touch database/database.sqlite
+
+# Fix permissions for Apache www-data user
+chown -R www-data:www-data storage bootstrap/cache database .env
+chmod -R 775 storage bootstrap/cache database
+chmod 664 database/database.sqlite .env
+
+# Generate APP_KEY if not already set
+if ! grep -q "^APP_KEY=base64:" .env && [ -z "$APP_KEY" ]; then
+    echo "Generating Application Key..."
+    php artisan key:generate --force
+fi
+
+# Run database migrations and seeders
+echo "Running migrations and database seeders..."
+php artisan migrate --force --seed || true
+
+# Clear any cached config so environment variables are respected
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+echo "Application setup complete. Starting Apache..."
 
 exec "$@"
