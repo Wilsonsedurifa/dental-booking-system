@@ -27,7 +27,7 @@
     <p>Choose the treatment or check-up service you require for your appointment.</p>
 </div>
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div class="alert-error">{{ $errors->first() }}</div>
 @endif
 

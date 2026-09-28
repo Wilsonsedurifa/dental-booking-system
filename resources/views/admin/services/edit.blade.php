@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="form-card">
-    @if ($errors->any())
+    @if (isset($errors) && $errors->any())
         <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
             {{ $errors->first() }}
         </div>

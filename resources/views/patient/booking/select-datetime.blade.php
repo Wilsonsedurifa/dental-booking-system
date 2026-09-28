@@ -27,7 +27,7 @@
     <p>Choose an available slot with Dr. {{ $dentist->user->name ?? $dentist->name }} for <strong>{{ $service->name }}</strong>.</p>
 </div>
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div class="alert-error">{{ $errors->first() }}</div>
 @endif
 

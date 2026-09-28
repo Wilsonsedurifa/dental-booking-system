@@ -27,7 +27,7 @@
     <p>Please review your booking details below before finalizing your schedule.</p>
 </div>
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div class="alert-error">{{ $errors->first() }}</div>
 @endif
 

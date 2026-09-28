@@ -27,7 +27,7 @@
     <p>Pick one of our board-certified dental practitioners for your <strong>{{ $service->name }}</strong>.</p>
 </div>
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div class="alert-error">{{ $errors->first() }}</div>
 @endif
 
