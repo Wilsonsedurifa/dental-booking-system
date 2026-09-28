@@ -32,9 +32,10 @@ COPY . .
 # Install PHP production dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set storage permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+# Set storage and public permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 755 /var/www/html/public \
     && chmod +x /var/www/html/docker/entrypoint.sh
 
 EXPOSE 80

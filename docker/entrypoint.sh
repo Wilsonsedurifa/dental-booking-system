@@ -22,8 +22,9 @@ mkdir -p database \
 touch database/database.sqlite
 
 # Fix permissions for Apache www-data user
-chown -R www-data:www-data storage bootstrap/cache database .env
+chown -R www-data:www-data storage bootstrap/cache database public .env
 chmod -R 775 storage bootstrap/cache database
+chmod -R 755 public
 chmod 664 database/database.sqlite .env
 
 # Generate APP_KEY if not already set
