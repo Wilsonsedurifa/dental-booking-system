@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 | Public & Guest Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return redirect()->route('booking.service');
-});
+Route::get('/', fn () => view('landing'));
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
