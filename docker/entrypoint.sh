@@ -5,18 +5,19 @@ set -e
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# If SQLite is selected and file doesn't exist, create it
-if [ "$DB_CONNECTION" = "sqlite" ] && [ ! -f /var/www/html/database/database.sqlite ]; then
+# If SQLite is selected, ensure Laravel can create and write the database file.
+if [ "$DB_CONNECTION" = "sqlite" ]; then
+    mkdir -p /var/www/html/database
     touch /var/www/html/database/database.sqlite
-    chown www-data:www-data /var/www/html/database/database.sqlite
+    chown -R www-data:www-data /var/www/html/database
 fi
 
-# Run migrations and seeder automatically
-php artisan migrate --force --seed || true
+# Run migrations and seed data. Do not hide an error: Render must report it
+# instead of starting an application that will return a generic 500 response.
+php artisan migrate --force --seed --no-interaction
 
 # Cache configurations for speed in production
-php artisan config:cache || true
-php artisan route:cache || true
-php artisan view:cache || true
+php artisan config:cache
+php artisan view:cache
 
 exec "$@"
